@@ -10,7 +10,7 @@
 #set text(font: "Cantarell", size: 8.5pt)
 #set par(justify: true, spacing: 1em)
 #set list(indent: 2em)
-#set table(align: horizon)
+#set table(align: horizon, stroke: 0.5pt)
 // #set raw(lang: "java", theme: "latte.tmTheme")
 
 // #show raw: set text(font: "JetBrainsMono Nerd Font")
@@ -18,7 +18,7 @@
 #show heading: set block(below: 8pt)
 #show heading: set align(center)
 #show heading: set text(font: "Cabin", size: 9pt, weight: "extrabold", luma(75))
-#show emph: set text(font: "Noto Sans", fill: luma(125))
+#show emph: set text(font: "Noto Sans")
 #show table: set align(center)
 #show table: set text(size: 7.5pt)
 
@@ -53,11 +53,11 @@
 // COLOUR THEME !
 #let cTheme = (
   c1: rgb("#1E3A8A"),
-  c2: rgb("#1F6F5F"),
-  c3: rgb("#1F8E8F"),
-  c4: rgb("#6A3FB3"),
-  c5: rgb("#B23A8A"),
-  c6: rgb("#A73636")
+  c2: rgb("#4B3FB3"),
+  c3: rgb("#7B3FB3"),
+  c4: rgb("#B23A8A"),
+  c5: rgb("#1F6F5F"),
+  c6: rgb("#1F8E8F")
 )
 
 = #text("Algorithmic Analysis", fill: cTheme.c1)
@@ -78,10 +78,8 @@ $ <--> exists c_1, c_2 in RR, n_0 in ZZ^(>=0) text("s.t.") forall n >= n_0, c_1 
 
 = #text("Recursion Analysis", fill: cTheme.c2)
 
-#text("Case 1: ", weight: "bold", fill: cTheme.c2) work per call follows pattern - $T(n) = T(n-1) + O(1)$
-
-#text("Case 2: ", weight: "bold", fill: cTheme.c2) work per level is the same - $T(n) = 2 T(n / 2) + O(n)$
-
+#text("Case 1: ", weight: "bold", fill: cTheme.c2) work per call follows pattern - $T(n) = T(n-1) + O(1)$\
+#text("Case 2: ", weight: "bold", fill: cTheme.c2) work per level is the same - $T(n) = 2 T(n / 2) + O(n)$\
 #text("Case 3: ", weight: "bold", fill: cTheme.c2) work per call is the same - $T(n) = 2 T(n - 1) + O(1)$
 
 #rect(width: 100%, height: 0%, stroke: strokeDict, inset: 0%, outset: 0%)
@@ -106,11 +104,60 @@ $ <--> exists c_1, c_2 in RR, n_0 in ZZ^(>=0) text("s.t.") forall n >= n_0, c_1 
 
 #rect(width: 100%, height: 0%, stroke: strokeDict, inset: 0%, outset: 0%)
 
-= #text("Data Structures", fill: cTheme.c4)
+= #text("Basic Data Structures", fill: cTheme.c4)
 
 #text("Amortisation: ", weight: "bold", fill: cTheme.c4) $T(n) div n$, where $n =$ no. of operations
 
+#table(
+  columns: 5,
+  [],
+  [#text(emph("access"), fill: cTheme.c4)],
+  [#text(emph("insert"), fill: cTheme.c4)],
+  [#text(emph("delete"), fill: cTheme.c4)],
+  [#text(emph("SPACE"), fill: cTheme.c4)],
 
+  [#text("Dynamic Array", weight: "bold", fill: cTheme.c4)], [$O(1)$], [$O(n)$\*], [$O(n)$], [$O(n)$],
+  [#text("Linked List", weight: "bold", fill: cTheme.c4)], [$O(1)$], [$O(n)$], [$O(n)$], [$O(n)$],
+
+  // STACK
+  table.cell(rowspan: 2, text("Stack\nLIFO", weight: "bold", fill: cTheme.c4)),
+  [#text(emph("push"), weight: "bold", fill: cTheme.c4)],
+  [#text(emph("pop"), weight: "bold", fill: cTheme.c4)],
+  table.cell(colspan: 2, text(emph("SPACE"), weight: "bold", fill: cTheme.c4)),
+  [$O(1)^1$], [$O(1)$], table.cell(colspan:2, $O(n)$),
+  
+  // QUEUE
+  table.cell(rowspan: 2, text("Queue\nFIFO", weight: "bold", fill: cTheme.c4)),
+  [#text(emph("enqueue"), weight: "bold", fill: cTheme.c4)],
+  [#text(emph("dequeue"), weight: "bold", fill: cTheme.c4)],
+  table.cell(colspan: 2, text(emph("SPACE"), weight: "bold", fill: cTheme.c4)),
+  [$O(1)$], [$O(1)$], table.cell(colspan:2, $O(n)$),
+
+  // table notes
+  table.cell(colspan: 5, align: left, inset: 3pt, emph(text(super("1") + " amortised if array-based implementation")))
+)
+
+
+#rect(width: 100%, height: 0%, stroke: strokeDict, inset: 0%, outset: 0%)
+
+= #text("Trees", fill: cTheme.c5)
+
+#text("Proper Binary Tree: ", weight: "bold", fill: cTheme.c5) internal nodes have 2 children (levels $<=$ full)\
+#text("Complete Binary Tree: ", weight: "bold", fill: cTheme.c5) levels $0 -> h - 1$ full, level $h$ left-most
+
+#table(
+  columns: 3,
+  table.header(
+    [#text("Pre-Order", weight: "bold", fill: cTheme.c5)],
+    [#text("In-Order", weight: "bold", fill: cTheme.c5)],
+    [#text("Post-Order", weight: "bold", fill: cTheme.c5)],
+  ),
+  [self $->$ left $->$ right], [left $->$ self $->$ right], [left $->$ right $->$ self]
+)
+
+#text("Properties:", weight: "bold", fill: cTheme.c5)
+- Full level L has $2^L$ nodes (note $L >= 0$)
+- Max no. of nodes = $2^h - 1$, max internal nodes = $2^(h - 1) - 1$
 
 #pagebreak()
 
