@@ -10,10 +10,13 @@
 #set text(font: "Cantarell", size: 8.5pt)
 #set par(justify: true, spacing: 1em)
 #set list(indent: 2em)
+#set enum(indent: 2em)
 #set table(align: horizon, stroke: 0.5pt)
+#set grid(column-gutter: 2em, row-gutter: 0.5em, align: center)
+
 // #set raw(lang: "java", theme: "latte.tmTheme")
 
-// #show raw: set text(font: "JetBrainsMono Nerd Font")
+#show raw: set text(font: "JetBrainsMono Nerd Font", size: 7.5pt)
 #show heading: smallcaps
 #show heading: set block(below: 8pt)
 #show heading: set align(center)
@@ -21,31 +24,31 @@
 #show emph: set text(font: "Noto Sans")
 #show table: set align(center)
 #show table: set text(size: 7.5pt)
+#show grid: set par(spacing: 0.25em)
 
 #let strokeDict = (top: 1pt + luma(150)) // for section borders
 
 #let customAlgo(title, params, body) = {
   let small-params = params.map(p => text(font: "Cabin", size: 8pt)[#p])
-  let monoFont = "JetBrainsMono NF"
-  show math.equation: set text(font: monoFont)
+  // let monoFont = "JetBrainsMono NF"
+  // show math.equation: set text(font: monoFont)
   algo(
     title: [
       #set text(font: "Cabin", size: 9pt)
-      #smallcaps(title)
+      #smallcaps("Algorithm " + title)
     ],
     parameters: small-params,
     comment-prefix: [#sym.triangle.stroked.r ],
-    comment-styles: (fill: rgb(100%, 0%, 0%), font: monoFont, size: 7pt),
+    // comment-styles: (fill: rgb(100%, 0%, 0%), font: monoFont, size: 7pt),
     line-numbers: false,
     indent-size: 10pt,
     indent-guides: 0.5pt + luma(200),
     row-gutter: 5pt,
-    column-gutter: 0pt,
+    column-gutter: 4em,
     inset: 4pt,
-    stroke: 0pt,
-    main-text-styles: (font: monoFont, size: 8pt),
+    // stroke: 0pt,
+    // main-text-styles: (font: monoFont, size: 8pt),
     block-align: center,
-    fill: luma(250),
     body
   )
 }
@@ -57,7 +60,7 @@
   c3: rgb("#7B3FB3"),
   c4: rgb("#B23A8A"),
   c5: rgb("#1F6F5F"),
-  c6: rgb("#1F8E8F")
+  c6: rgb("#2ba5bb")
 )
 
 = #text("Algorithmic Analysis", fill: cTheme.c1)
@@ -111,32 +114,25 @@ $ <--> exists c_1, c_2 in RR, n_0 in ZZ^(>=0) text("s.t.") forall n >= n_0, c_1 
 #table(
   columns: 5,
   [],
-  [#text(emph("access"), fill: cTheme.c4)],
-  [#text(emph("insert"), fill: cTheme.c4)],
-  [#text(emph("delete"), fill: cTheme.c4)],
   [#text(emph("SPACE"), fill: cTheme.c4)],
+  [#text(emph("get"), fill: cTheme.c4)],
+  [#text(emph("add"), fill: cTheme.c4)],
+  [#text(emph("remove"), fill: cTheme.c4)],
 
-  [#text("Dynamic Array", weight: "bold", fill: cTheme.c4)], [$O(1)$], [$O(n)$\*], [$O(n)$], [$O(n)$],
-  [#text("Linked List", weight: "bold", fill: cTheme.c4)], [$O(1)$], [$O(n)$], [$O(n)$], [$O(n)$],
+  [#text("Dynamic Array", weight: "bold", fill: cTheme.c4)], [$O(n)$], [$O(1)$], [$O(n)$\*], [$O(n)$], 
+  [#text("Linked List", weight: "bold", fill: cTheme.c4)], [$O(n)$], [$O(1)$], [$O(n)$], [$O(n)$], 
 
   // STACK
-  table.cell(rowspan: 2, text("Stack\nLIFO", weight: "bold", fill: cTheme.c4)),
-  [#text(emph("push"), weight: "bold", fill: cTheme.c4)],
-  [#text(emph("pop"), weight: "bold", fill: cTheme.c4)],
-  table.cell(colspan: 2, text(emph("SPACE"), weight: "bold", fill: cTheme.c4)),
-  [$O(1)^1$], [$O(1)$], table.cell(colspan:2, $O(n)$),
+  [#text("Stack - LIFO", weight: "bold", fill: cTheme.c4)],
+  table.cell(colspan:2, text(emph("SPACE: "), fill: cTheme.c4) + $O(n)$), [$O(1)^1$], [$O(1)$], 
   
   // QUEUE
-  table.cell(rowspan: 2, text("Queue\nFIFO", weight: "bold", fill: cTheme.c4)),
-  [#text(emph("enqueue"), weight: "bold", fill: cTheme.c4)],
-  [#text(emph("dequeue"), weight: "bold", fill: cTheme.c4)],
-  table.cell(colspan: 2, text(emph("SPACE"), weight: "bold", fill: cTheme.c4)),
-  [$O(1)$], [$O(1)$], table.cell(colspan:2, $O(n)$),
-
+  [#text("Queue - FIFO", weight: "bold", fill: cTheme.c4)],
+  table.cell(colspan:2, text(emph("SPACE: "), fill: cTheme.c4) + $O(n)$), [$O(1)$], [$O(1)$], 
+  
   // table notes
   table.cell(colspan: 5, align: left, inset: 3pt, emph(text(super("1") + " amortised if array-based implementation")))
 )
-
 
 #rect(width: 100%, height: 0%, stroke: strokeDict, inset: 0%, outset: 0%)
 
@@ -156,14 +152,75 @@ $ <--> exists c_1, c_2 in RR, n_0 in ZZ^(>=0) text("s.t.") forall n >= n_0, c_1 
 )
 
 #text("Properties:", weight: "bold", fill: cTheme.c5)
-- Full level L has $2^L$ nodes (note $L >= 0$)
-- Max no. of nodes = $2^h - 1$, max internal nodes = $2^(h - 1) - 1$
+- Full level $l$ has $2^l$ nodes (note $l >= 0$)
+- Max no. of nodes = $2^(l_"MAX") - 1$, max internal nodes = $2^(l_"MAX" - 1) - 1$
+- $h$ = no. of edges from lowest leaf, $l$ & $d$ use 0-based index.
+
+#rect(width: 100%, height: 0%, stroke: strokeDict, inset: 0%, outset: 0%)
+
+= #text("Heaps & Priority Queues", fill: cTheme.c6)
+
+#text("Binary Heap: ", weight: "bold", fill: cTheme.c6) complete binary tree with heap property order
+#align(center, text($k e y (n o d e) <= k e y ( p a r e n t (n o d e))$ + " OR " + $k e y (n o d e) >= k e y ( p a r e n t (n o d e))$))
+
+#text("Insertion: ", weight: "bold", fill: cTheme.c6) insert at last node location then *upHeap* - 
+1. Check $k < p a r e n t and k != r o o t$
+2. Swap $k <--> p a r e n t_text("greater than current")$
+3. Repeat until $k >= p a r e n t or k = r o o t --> O(log n)$
+
+#text("RemoveMin: ", weight: "bold", fill: cTheme.c6) swap root $<-->$ last node then *downHeap* - 
+1. Check $k > c h i l d_text("left or right")$
+2. Swap $k <--> c h i l d_text("less than current")$
+3. Repeat until $k > c h i l d_text("both") or k = l e a f --> O(log n)$
+
+#text("Array-Based: ", weight: "bold", fill: cTheme.c6) left child @ $2i+1$ & right child @ $2i+2$
+
+#customAlgo(text("HeapSortGeneric", fill: cTheme.c6), ("A",), [
+  for a in A do: #i #comment($O(n log n)$ + " loop") \
+    heap.add(a) #d \
+  i $<-$ 1 \
+  while !heap.isEmpty() do: #i #comment($O(n log n)$ + " loop")\
+    A[i] $<-$ heap.removeMin() \
+    i $<-$ i + 1 \
+]
+)
+
+#customAlgo(text("HeapSortBottomUp", fill: cTheme.c6), ("A",), [
+  !!!
+]
+)
 
 #pagebreak()
 
-= Other
+= #text("ADT Methods", fill: cTheme.c1)
 
-test
+
+#grid( //  STACK
+  columns: (15%, auto, auto, auto),
+  grid.cell(rowspan: 2, text("Stack", weight: "bold", fill: cTheme.c1), align: left + horizon),
+  [`push(V)`], [`pop()`], [`top()` or `peek()`]
+)
+
+#grid( //  QUEUE
+  columns: (15%, auto, auto, auto),
+  grid.cell(rowspan: 2, text("Queue", weight: "bold", fill: cTheme.c1), align: left + horizon),
+  [`enqueue(V)`], [`dequeue()`], [`front()` or `peek()`]
+)
+
+#grid( //  PQ
+  columns: (15%, auto, auto, auto),
+  grid.cell(rowspan: 2, text("Priority Q", weight: "bold", fill: cTheme.c1), align: left + horizon),
+  [`insert(K, V)`], [`removeMin()`], [`min()`]
+)
+
+#grid( //  Entry
+  columns: (15%, auto, auto, auto),
+  grid.cell(rowspan: 2, text("Entry", weight: "bold", fill: cTheme.c1), align: left + horizon),
+  [`getKey()`], [`getValue()`], [`compareTo(Entry)`]
+)
+
+
+
 
 // #customAlgo(text("BinarySearch", fill: cTheme.c2), ("A, l, r",), [
 //     *Input:* a sorted array, $A$\
