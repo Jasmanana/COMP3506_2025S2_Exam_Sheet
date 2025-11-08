@@ -5,6 +5,7 @@
 // #codly(languages: codly-languages)
 
 #import "@preview/algo:0.3.6": algo, i, d, comment, code
+// #import "@preview/arborly:0.3.2": tree
 
 #set page(paper: "a4", margin: (x: 20pt, y: 20pt), columns: 2)
 #set text(font: "Cantarell", size: 8.5pt)
@@ -17,10 +18,14 @@
 // #set raw(lang: "java", theme: "latte.tmTheme")
 
 #show raw: set text(font: "JetBrainsMono Nerd Font", size: 7.5pt)
-#show heading: smallcaps
-#show heading: set block(below: 8pt)
-#show heading: set align(center)
-#show heading: set text(font: "Cabin", size: 9pt, weight: "extrabold", luma(75))
+#show heading: content => {
+  set block(below: 8pt, above: 6pt)
+  set align(center)
+  set text(font: "Cabin", size: 9pt, weight: "extrabold", luma(75))
+  line(length: 100%, stroke: 0.5pt + luma(100))
+  smallcaps(content)
+}
+
 #show emph: set text(font: "Noto Sans")
 #show table: set align(center)
 #show table: set text(size: 7.5pt)
@@ -63,7 +68,7 @@
   c6: rgb("#2ba5bb")
 )
 
-= #text("Algorithmic Analysis", fill: cTheme.c1)
+= #text(fill: cTheme.c1)[Algorithmic Analysis]
 
 #text("Big O:", weight: "bold", fill: cTheme.c1) 
 $f(n) in O(g(n)) <--> exists c in RR, n_0 in ZZ^(>=0) text("s.t.") forall n >= n_0, f(n) <= c dot g(n)$
@@ -77,15 +82,11 @@ $ <--> exists c_1, c_2 in RR, n_0 in ZZ^(>=0) text("s.t.") forall n >= n_0, c_1 
 
 #text("Growth Rates:", weight: "bold", fill: cTheme.c1) $1 -> log(n) -> n -> n log(n) -> n^2 -> n^3 -> c^n -> n!$
 
-#rect(width: 100%, height: 0%, stroke: strokeDict, inset: 0%, outset: 0%)
-
 = #text("Recursion Analysis", fill: cTheme.c2)
 
 #text("Case 1: ", weight: "bold", fill: cTheme.c2) work per call follows pattern - $T(n) = T(n-1) + O(1)$\
 #text("Case 2: ", weight: "bold", fill: cTheme.c2) work per level is the same - $T(n) = 2 T(n / 2) + O(n)$\
 #text("Case 3: ", weight: "bold", fill: cTheme.c2) work per call is the same - $T(n) = 2 T(n - 1) + O(1)$
-
-#rect(width: 100%, height: 0%, stroke: strokeDict, inset: 0%, outset: 0%)
 
 = #text("Sorting Algorithms", fill: cTheme.c3)
 
@@ -104,8 +105,6 @@ $ <--> exists c_1, c_2 in RR, n_0 in ZZ^(>=0) text("s.t.") forall n >= n_0, c_1 
   [Quick _3-partition_], [$O(n^2)$], [$O(n)$ _uniform list_], [$O(n log n)$],
   [Radix], [$O(d(n + N))$], [$O(d(n + N))$], [$O(d(n + N))$]
 )
-
-#rect(width: 100%, height: 0%, stroke: strokeDict, inset: 0%, outset: 0%)
 
 = #text("Basic Data Structures", fill: cTheme.c4)
 
@@ -134,11 +133,9 @@ $ <--> exists c_1, c_2 in RR, n_0 in ZZ^(>=0) text("s.t.") forall n >= n_0, c_1 
   table.cell(colspan: 5, align: left, inset: 3pt, emph(text(super("1") + " amortised if array-based implementation")))
 )
 
-#rect(width: 100%, height: 0%, stroke: strokeDict, inset: 0%, outset: 0%)
+= #text("Binary Trees", fill: cTheme.c5)
 
-= #text("Trees", fill: cTheme.c5)
-
-#text("Proper Binary Tree: ", weight: "bold", fill: cTheme.c5) internal nodes have 2 children (levels $<=$ full)\
+#text("Proper Binary Tree: ", weight: "bold", fill: cTheme.c5) internal nodes have exactly 2 children \
 #text("Complete Binary Tree: ", weight: "bold", fill: cTheme.c5) levels $0 -> h - 1$ full, level $h$ left-most
 
 #table(
@@ -154,9 +151,9 @@ $ <--> exists c_1, c_2 in RR, n_0 in ZZ^(>=0) text("s.t.") forall n >= n_0, c_1 
 #text("Properties:", weight: "bold", fill: cTheme.c5)
 - Full level $l$ has $2^l$ nodes (note $l >= 0$)
 - Max no. of nodes = $2^(l_"MAX") - 1$, max internal nodes = $2^(l_"MAX" - 1) - 1$
-- $h$ = no. of edges from lowest leaf, $l$ & $d$ use 0-based index.
-
-#rect(width: 100%, height: 0%, stroke: strokeDict, inset: 0%, outset: 0%)
+- $h$ = no. of edges from lowest leaf = $floor(log_2 n)$\
+  \u{26A0} _care with null leaves in implementation vs. conceptual tree_
+- $l$ & $d$ use 0-based index.
 
 = #text("Heaps & Priority Queues", fill: cTheme.c6)
 
@@ -175,20 +172,26 @@ $ <--> exists c_1, c_2 in RR, n_0 in ZZ^(>=0) text("s.t.") forall n >= n_0, c_1 
 
 #text("Array-Based: ", weight: "bold", fill: cTheme.c6) left child @ $2i+1$ & right child @ $2i+2$
 
-#customAlgo(text("HeapSortGeneric", fill: cTheme.c6), ("A",), [
-  for a in A do: #i #comment($O(n log n)$ + " loop") \
-    heap.add(a) #d \
-  i $<-$ 1 \
-  while !heap.isEmpty() do: #i #comment($O(n log n)$ + " loop")\
-    A[i] $<-$ heap.removeMin() \
-    i $<-$ i + 1 \
-]
-)
+#text("Heap Sort: ", weight: "bold", fill: cTheme.c6) for $a$ in $A ->$ add to heap $->$ removeMin back to $A$
 
-#customAlgo(text("HeapSortBottomUp", fill: cTheme.c6), ("A",), [
-  !!!
-]
-)
+#text("Bottom Up Heap Construction: ", weight: "bold", fill: cTheme.c6) get $l_text("MAX") = floor(log_2 n) ->$ get no. of leaves on bottom level (fill remaining with nulls) $->$ add nodes to merge heaps
+
+= #text("Maps - Hash Tables", fill: cTheme.c1)
+
+#text("General Summary: ", weight: "bold", fill: cTheme.c1) pre-hash $->$ compress $->$ handle collisions $->$ rehash
+
+#text("Pre-hash to " + emph("Hash Code") + ": ", weight: "bold", fill: cTheme.c1) 
+- Component sum: e.g. sum of all char in string (collision risk)
+- Polynomial accumulation: $p(z) = a_0 z^0 + a_1 z^1 + ... space z in ZZ$
+- Cyclic shift: replace $z$ with bit-shifted version (e.g. $z << 5$)
+
+#text("Compress to " + emph("Hash Value") + ": ", weight: "bold", fill: cTheme.c1) below - $N =$ table size $ and N in ZZ^(text("prime"))$
+- Division: $h(k) = k mod N$
+- MAD: $h(k) = ((a k + b) mod p) mod N$\
+  $p > N and p in ZZ^(text("prime")), a in [1, p - 1], b in [0, p - 1]$
+
+#text("Collision Handling: ", weight: "bold", fill: cTheme.c1)
+- $1 2 3 "test" t e s t 1 2$
 
 #pagebreak()
 
@@ -219,6 +222,12 @@ $ <--> exists c_1, c_2 in RR, n_0 in ZZ^(>=0) text("s.t.") forall n >= n_0, c_1 
   [`getKey()`], [`getValue()`], [`compareTo(Entry)`]
 )
 
+#grid( // Map 
+  columns: (15%, auto, auto, auto),
+  grid.cell(rowspan: 2, text("Map", weight: "bold", fill: cTheme.c1), align: left + horizon),
+  [`get(K)`], [`put(K, V)`], [`remove(K)`],
+  [`entrySet()`], [`keySet()`], [`values()`]
+)
 
 
 
