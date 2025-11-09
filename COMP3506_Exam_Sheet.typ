@@ -31,8 +31,6 @@
 #show table: set text(size: 7.5pt)
 #show grid: set par(spacing: 0.25em)
 
-#let strokeDict = (top: 1pt + luma(150)) // for section borders
-
 #let customAlgo(title, params, body) = {
   let small-params = params.map(p => text(font: "Cabin", size: 8pt)[#p])
   // let monoFont = "JetBrainsMono NF"
@@ -88,7 +86,7 @@ $ <--> exists c_1, c_2 in RR, n_0 in ZZ^(>=0) text("s.t.") forall n >= n_0, c_1 
 #text("Case 2: ", weight: "bold", fill: cTheme.c2) work per level is the same - $T(n) = 2 T(n / 2) + O(n)$\
 #text("Case 3: ", weight: "bold", fill: cTheme.c2) work per call is the same - $T(n) = 2 T(n - 1) + O(1)$
 
-= #text("Sorting Algorithms", fill: cTheme.c3)
+= #text(fill: cTheme.c3)[Sorting Algorithms]
 
 #table(
   columns: 4,
@@ -106,7 +104,7 @@ $ <--> exists c_1, c_2 in RR, n_0 in ZZ^(>=0) text("s.t.") forall n >= n_0, c_1 
   [Radix], [$O(d(n + N))$], [$O(d(n + N))$], [$O(d(n + N))$]
 )
 
-= #text("Basic Data Structures", fill: cTheme.c4)
+= #text(fill: cTheme.c4)[Basic Data Structures]
 
 #text("Amortisation: ", weight: "bold", fill: cTheme.c4) $T(n) div n$, where $n =$ no. of operations
 
@@ -155,7 +153,7 @@ $ <--> exists c_1, c_2 in RR, n_0 in ZZ^(>=0) text("s.t.") forall n >= n_0, c_1 
   \u{26A0} _care with null leaves in implementation vs. conceptual tree_
 - $l$ & $d$ use 0-based index.
 
-= #text("Heaps & Priority Queues", fill: cTheme.c6)
+= #text(fill: cTheme.c6)[Heaps & Priority Queues]
 
 #text("Binary Heap: ", weight: "bold", fill: cTheme.c6) complete binary tree with heap property order
 #align(center, text($k e y (n o d e) <= k e y ( p a r e n t (n o d e))$ + " OR " + $k e y (n o d e) >= k e y ( p a r e n t (n o d e))$))
@@ -176,22 +174,73 @@ $ <--> exists c_1, c_2 in RR, n_0 in ZZ^(>=0) text("s.t.") forall n >= n_0, c_1 
 
 #text("Bottom Up Heap Construction: ", weight: "bold", fill: cTheme.c6) get $l_text("MAX") = floor(log_2 n) ->$ get no. of leaves on bottom level (fill remaining with nulls) $->$ add nodes to merge heaps
 
-= #text("Maps - Hash Tables", fill: cTheme.c1)
+= #text(fill: cTheme.c1)[Maps - Hash Tables]
 
 #text("General Summary: ", weight: "bold", fill: cTheme.c1) pre-hash $->$ compress $->$ handle collisions $->$ rehash
+
+#text("Complexities: ", weight: "bold", fill: cTheme.c1) $O(1)$ expectation, $O(n)$ worst-case
 
 #text("Pre-hash to " + emph("Hash Code") + ": ", weight: "bold", fill: cTheme.c1) 
 - Component sum: e.g. sum of all char in string (collision risk)
 - Polynomial accumulation: $p(z) = a_0 z^0 + a_1 z^1 + ... space z in ZZ$
 - Cyclic shift: replace $z$ with bit-shifted version (e.g. $z << 5$)
 
-#text("Compress to " + emph("Hash Value") + ": ", weight: "bold", fill: cTheme.c1) below - $N =$ table size $ and N in ZZ^(text("prime"))$
+#text("Compress to " + emph("Hash Value") + ": ", weight: "bold", fill: cTheme.c1) fow below, $N =$ table size $ and N in ZZ^(text("prime"))$
 - Division: $h(k) = k mod N$
 - MAD: $h(k) = ((a k + b) mod p) mod N$\
   $p > N and p in ZZ^(text("prime")), a in [1, p - 1], b in [0, p - 1]$
 
-#text("Collision Handling: ", weight: "bold", fill: cTheme.c1)
-- $1 2 3 "test" t e s t 1 2$
+#text("Collision Handling: ", weight: "bold", fill: cTheme.c1) separate chaining vs. open addressing
+- Probe idx computed as $(h(k) + f(i)) mod N$ for $i = 0, 1, 2...$
+- 1st probe is just $h(k)$ hence $i=0$ for open addressing, below:
+#table(
+  columns: 4,
+  table.header(
+    [],
+    [#text("Linear", weight: "bold", fill: cTheme.c1)],
+    [#text("Quadratic", weight: "bold", fill: cTheme.c1)],
+    [#text("Double Hash", weight: "bold", fill: cTheme.c1)],
+  ),
+  [#text(fill: cTheme.c1)[$f(i)$]],
+  [$i$],
+  [$i^2$],
+  [$i times d(k)$]
+)
+
+#text(weight: "bold", fill: cTheme.c1)[Load Factor $alpha = n / N$] $-> 0.8 <= alpha <= 1$ chaining & $alpha < 2/3$ open addressing
+
+- Expected no. of probes = $1 / (1 - alpha)$
+
+= #text(fill: cTheme.c2)[Search Trees]
+
+#text(weight: "bold", fill: cTheme.c2)[BST: ] $O(log n)$ expected get, add, remove (in-order traversal), $O(n)$ worst
+#align(center, rect(image("images/BST_Deletion.jpg", width: 65%), stroke: 1pt, inset: 0.5pt))
+
+#text(weight: "bold", fill: cTheme.c2)[AVL Trees:] BST that doesn't degrade to $O(n)$
+- Insertion: re-balance at *first* unbalanced node from bottom
+- Deletion: after BST deletoin, re-balance upwards from bottom
+- Tri-node inputs: parent, child + grandchild of greater height
+#align(center, rect(image("images/AVL_Double_Rotation.jpg"), stroke: 1pt, inset: 0.5pt))
+
+#text(weight: "bold", fill: cTheme.c2)[Splay Trees:] $O(n)$ worst, $<O(log n)$ best (popular nodes), $O(log n)^*$
+- `get(K)` - splay found node, or last accessed node before null leaf
+- `insert(K,V)` - splay inserted/updated node
+- `remove(K)` - splay original parent of removal node
+
+// #table(
+//   columns: 2,
+//   table.header(
+//     [#text("Method", weight: "bold", fill: cTheme.c2)],
+//     [#text("Splay", weight: "bold", fill: cTheme.c2)],
+//   ),
+//   [get(K)], [#align(left)[Found node, or the last accessed node before null leaf)]],
+//   [insert(K, V)], [#align(left)[Inserted/updated node]],
+//   [remove(K)], [#align(left)[Original parent of removal node]]
+// )
+#align(center, rect(image("images/Splay_ZIG.png", width: 55%), stroke: 1pt, inset: 0.5pt))
+#align(center, rect(image("images/Splay_ZIGZIG.png", width: 70%), stroke: 1pt, inset: 0.5pt))
+#align(center, rect(image("images/Splay_ZAGZIG.png", width: 70%), stroke: 1pt, inset: 0.5pt))
+
 
 #pagebreak()
 
