@@ -7,21 +7,22 @@
 #import "@preview/algo:0.3.6": algo, i, d, comment, code
 // #import "@preview/arborly:0.3.2": tree
 
-#set page(paper: "a4", margin: (x: 20pt, y: 20pt), columns: 2)
-#set text(font: "Cantarell", size: 8.5pt)
+#set page(paper: "a4", margin: (x: 10pt, y: 15pt), columns: 3, flipped: true)
+#set columns(gutter: 10pt)
+#set text(font: "Cantarell", size: 7pt)
 #set par(justify: true, spacing: 1em)
 #set list(indent: 2em)
 #set enum(indent: 2em)
-#set table(align: horizon, stroke: 0.5pt)
+#set table(align: horizon, stroke: 0.5pt, inset: 0.4em)
 #set grid(column-gutter: 2em, row-gutter: 0.5em, align: center)
 
 // #set raw(lang: "java", theme: "latte.tmTheme")
 
-#show raw: set text(font: "JetBrainsMono Nerd Font", size: 7.5pt)
+#show raw: set text(font: "JetBrainsMono Nerd Font", size: 6.5pt)
 #show heading: content => {
-  set block(below: 8pt, above: 6pt)
+  set block(below: 0.5em, above: 0.5em)
   set align(center)
-  set text(font: "Cabin", size: 9pt, weight: "extrabold", luma(75))
+  set text(font: "Cabin", size: 7.5pt, weight: "extrabold", luma(75))
   line(length: 100%, stroke: 0.5pt + luma(100))
   smallcaps(content)
 }
@@ -58,10 +59,10 @@
 
 // COLOUR THEME !
 #let cTheme = (
-  c1: rgb("#1E3A8A"),
-  c2: rgb("#4B3FB3"),
-  c3: rgb("#7B3FB3"),
-  c4: rgb("#B23A8A"),
+  c1: rgb("#1e2e8a"),
+  c2: rgb("#623fb3"),
+  c3: rgb("#B23A8A"),
+  c4: rgb("#e7493d"),
   c5: rgb("#1F6F5F"),
   c6: rgb("#2ba5bb")
 )
@@ -218,7 +219,7 @@ $ <--> exists c_1, c_2 in RR, n_0 in ZZ^(>=0) text("s.t.") forall n >= n_0, c_1 
 
 #text(weight: "bold", fill: cTheme.c2)[AVL Trees:] BST that doesn't degrade to $O(n)$
 - Insertion: re-balance at *first* unbalanced node from bottom
-- Deletion: after BST deletoin, re-balance upwards from bottom
+- Deletion: after BST deletion, re-balance upwards from bottom
 - Tri-node inputs: parent, child + grandchild of greater height
 #align(center, rect(image("images/AVL_Double_Rotation.jpg"), stroke: 1pt, inset: 0.5pt))
 
@@ -241,13 +242,56 @@ $ <--> exists c_1, c_2 in RR, n_0 in ZZ^(>=0) text("s.t.") forall n >= n_0, c_1 
 #align(center, rect(image("images/Splay_ZIGZIG.png", width: 70%), stroke: 1pt, inset: 0.5pt))
 #align(center, rect(image("images/Splay_ZAGZIG.png", width: 70%), stroke: 1pt, inset: 0.5pt))
 
+= #text(fill: cTheme.c3)[Graphs]
+- #text(weight: "bold", fill: cTheme.c3)[Incident] edge = connected to vertex, #text(weight: "bold", fill: cTheme.c3)[adjacent] vertices = connected by edge
+- #text(weight: "bold", fill: cTheme.c3)[Vertex Degree] = no. of incident edges (in vs out degree for directed)
+- #text(weight: "bold", fill: cTheme.c3)[Simple Path] = distinct edges AND vertices
+- #text(weight: "bold", fill: cTheme.c3)[Simple Cycle] = simple path with same start/end points
+- #text(weight: "bold", fill: cTheme.c3)[Subgraph] = subset of vertices/edges
+- #text(weight: "bold", fill: cTheme.c3)[Spanning Subgraph] of G = subgraph that contains _all_ vertices of G
+- #text(weight: "bold", fill: cTheme.c3)[Connected Graph] = $exists$ simple path between any 2 vertices
+- #text(weight: "bold", fill: cTheme.c3)[Unrooted Tree] = connected graph with no simple cycles (can be spanning)
+- #text(weight: "bold", fill: cTheme.c3)[Forest] = unconnected graph with no simple cycles (can be spanning)
+- #text(weight: "bold", fill: cTheme.c3)[Fully Dense Graph]: $sum d e g (v) = 2 times |E|$ in undirected graph $-> |E| <= n(n-1) div 2$
+- #text(weight: "bold", fill: cTheme.c3)[Graph Density]: 
+  - $(2 times |E|) / (n(n-1))$ undirected or $(|E|) / (n(n-1))$ directed
+  - $|E|~O(n)$ sparse or $|E|~O(n^2)$ dense
+- #text(weight: "bold", fill: cTheme.c3)[Graph Representations]: 
+  - Edge list: simple list of edge pointers only $O(m)$
+  - Adjacency List: for each vertex, store all adjacent vertices $O(n + m)$
+  - Adjacency Matrix: $V times V$ grid where $(u,v) = 1 <->$ edge exists
+
+  #table(
+  columns: (auto, auto, auto, auto),
+  align: center,
+  table.header(
+    [#text(fill: cTheme.c3, weight: "bold")[Feature]], 
+    [#text(fill: cTheme.c3, weight: "bold")[Edge List]], 
+    [#text(fill: cTheme.c3, weight: "bold")[Adjacency List]], 
+    [#text(fill: cTheme.c3, weight: "bold")[Adjacency Matrix]]
+  ),
+  [Space], [$n + m$], [$n + m$], [$n^2$],
+  [outgoingEdges($v$)], [$m$], [deg($v$)], [$n$],
+  [incomingEdges($v$)], [$m$], [deg($v$)], [$n$],
+  [getEdge($v, w$)], [$m$], [min(deg($v$),deg($w$))], [$1$],
+  [insertVertex($o$)], [$1$], [$1$], [$n^2$],
+  [insertEdge($v, w, o$)], [$1$], [$1$], [$1$],
+  [removeVertex($v$)], [$m$], [deg($v$)], [$n^2$],
+  [removeEdge($v$)], [$1$], [$1$], [$1$],
+  [Good for], [small graphs], [sparse graphs], [dense graphs]
+)
+
+
+
+
+
+
+
 #pagebreak()
 
-= #text(fill: cTheme.c3)[Graphs]
 
 
-
-= #text(fill: cTheme.c4)[ADT Methods]
+= #text(fill: cTheme.c1)[ADT Methods]
 
 
 #grid( //  STACK
@@ -281,11 +325,17 @@ $ <--> exists c_1, c_2 in RR, n_0 in ZZ^(>=0) text("s.t.") forall n >= n_0, c_1 
   [`entrySet()`], [`keySet()`], [`values()`]
 )
 
-#grid( // 
-  columns: (15%, auto, auto, auto),
-  grid.cell(rowspan: 2, text("Map", weight: "bold", fill: cTheme.c1), align: left + horizon),
-  [`get(K)`], [`put(K, V)`], [`remove(K)`],
-  [`entrySet()`], [`keySet()`], [`values()`]
+#grid( // Graphs
+  columns: (15%, auto, auto),
+  grid.cell(rowspan: 8, text("Graph", weight: "bold", fill: cTheme.c1), align: left + horizon),
+  [`numVertices()`], [`vertices()`],
+  [`numEdges()`], [`edges()`],
+  [`outDegree(V)`], [`inDegree(V)`],
+  [`outgoingEdges(V)`], [`incomingEdges(V)`],
+  [`insertVertex(x)`], [`insertEdge(V1, V2, x)`],
+  [`removeVertex(V)`], [`removeEdge(E)`], 
+  [`getEdge(V1, V2)`], [`endVertices(E)`], 
+  [`opposite(V, E)`],
 )
 
 
