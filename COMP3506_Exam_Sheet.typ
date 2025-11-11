@@ -241,10 +241,13 @@ $ <--> exists c_1, c_2 in RR, n_0 in ZZ^(>=0) text("s.t.") forall n >= n_0, c_1 
 #align(center, rect(image("images/Splay_ZIGZIG.png", width: 70%), stroke: 1pt, inset: 0.5pt))
 #align(center, rect(image("images/Splay_ZAGZIG.png", width: 70%), stroke: 1pt, inset: 0.5pt))
 
-
 #pagebreak()
 
-= #text("ADT Methods", fill: cTheme.c1)
+= #text(fill: cTheme.c3)[Graphs]
+
+
+
+= #text(fill: cTheme.c4)[ADT Methods]
 
 
 #grid( //  STACK
@@ -278,6 +281,12 @@ $ <--> exists c_1, c_2 in RR, n_0 in ZZ^(>=0) text("s.t.") forall n >= n_0, c_1 
   [`entrySet()`], [`keySet()`], [`values()`]
 )
 
+#grid( // 
+  columns: (15%, auto, auto, auto),
+  grid.cell(rowspan: 2, text("Map", weight: "bold", fill: cTheme.c1), align: left + horizon),
+  [`get(K)`], [`put(K, V)`], [`remove(K)`],
+  [`entrySet()`], [`keySet()`], [`values()`]
+)
 
 
 // #customAlgo(text("BinarySearch", fill: cTheme.c2), ("A, l, r",), [
