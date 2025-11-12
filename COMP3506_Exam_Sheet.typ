@@ -42,7 +42,8 @@
       #smallcaps("Algorithm " + title)
     ],
     parameters: small-params,
-    comment-prefix: [#sym.triangle.stroked.r ],
+    // comment-prefix: [#sym.triangle.stroked.r ],
+    comment-prefix: "// ",
     // comment-styles: (fill: rgb(100%, 0%, 0%), font: monoFont, size: 7pt),
     line-numbers: false,
     indent-size: 10pt,
@@ -245,6 +246,8 @@ $ <--> exists c_1, c_2 in RR, n_0 in ZZ^(>=0) text("s.t.") forall n >= n_0, c_1 
 = #text(fill: cTheme.c3)[Graphs]
 - #text(weight: "bold", fill: cTheme.c3)[Incident] edge = connected to vertex, #text(weight: "bold", fill: cTheme.c3)[adjacent] vertices = connected by edge
 - #text(weight: "bold", fill: cTheme.c3)[Vertex Degree] = no. of incident edges (in vs out degree for directed)
+- #text(weight: "bold", fill: cTheme.c3)[Simple Graph] = no loops or multi-edges
+- #text(weight: "bold", fill: cTheme.c3)[Simple Path] = distinct edges AND vertices
 - #text(weight: "bold", fill: cTheme.c3)[Simple Path] = distinct edges AND vertices
 - #text(weight: "bold", fill: cTheme.c3)[Simple Cycle] = simple path with same start/end points
 - #text(weight: "bold", fill: cTheme.c3)[Subgraph] = subset of vertices/edges
@@ -257,8 +260,8 @@ $ <--> exists c_1, c_2 in RR, n_0 in ZZ^(>=0) text("s.t.") forall n >= n_0, c_1 
   - $(2 times |E|) / (n(n-1))$ undirected or $(|E|) / (n(n-1))$ directed
   - $|E|~O(n)$ sparse or $|E|~O(n^2)$ dense
 - #text(weight: "bold", fill: cTheme.c3)[Graph Representations]: 
-  - Edge list: simple list of edge pointers only $O(m)$
-  - Adjacency List: for each vertex, store all adjacent vertices $O(n + m)$
+  - Edge list: simple list of edge pointers only _[(e1), (e2), ...]_ or _[(v1, v2), ...]_
+  - Adjacency List (or _map_): for each vertex, store adjacent vertices OR edges - _[(v1: e1, e2), (v2: e1, e3) ...]_ or _[(v1: v2, v3), (v2: v1, v4) ...]_
   - Adjacency Matrix: $V times V$ grid where $(u,v) = 1 <->$ edge exists
 
   #table(
@@ -281,14 +284,120 @@ $ <--> exists c_1, c_2 in RR, n_0 in ZZ^(>=0) text("s.t.") forall n >= n_0, c_1 
   [Good for], [small graphs], [sparse graphs], [dense graphs]
 )
 
-
-
-
-
-
+- #text(weight: "bold", fill: cTheme.c3)[DFS]: track unexplored + discovery + back edge, unexplored + explored vertex
+  1. Initialize an empty stack, and push node 0 into it.
+  2. Pop a vertex, mark it as visited only if not already visited.
+  3. Add the visited vertex to the result collection.
+  4. Push all unvisited adjacent vertices to the stack in reverse order.
 
 #pagebreak()
 
+#set page(paper: "a4", margin: (x: 10pt, y: 15pt), columns: 4, flipped: true)
+
+#text(fill: cTheme.c3)[Properties of DFS/BFS traversal:]
+- Back edge (DFS): edge to an ancestor (visited) vertex
+- Cross edge (BFS): edge to a visited vertex, either same or earlier level
+- Traversal visits all edges & vertices of connected component only
+- Discovery edges from DFS/BFS form spanning tree of connected component
+- DFS and BFS $O(n+m)$
+
+#text(fill: cTheme.c3)[Digraphs]
+- If $G$ is simple digraph $-> m <= n(n - 1)$
+- Directed DFS algorithm tracks discovery, back, forward, cross edges
+- *DAG* = Directed Acyclic Graph
+- *Topological Sort* = linear ordering of vertices such that for every directed edge $(u, v)$, $u < v$
+
+#text(fill: cTheme.c3)[Single Source Shortest Path (SSSP) for Weighted Graphs]
+- Subpath of a shortest path is itself a shortest path
+- $exists$ tree of shortest paths from a vertex to all others
+#text(fill: cTheme.c3)[Dijkstras Algorithm: ] assumes connected, undirected and non-negative edge weights
+- Tracks distance from source $d(v)$ for each vertex
+- Relaxation of edge $e$ updates distance:\
+  $d(v) <- min(d(v), d(u) + text("weight")(e))$
+
+#align(center, image("images/Dijkstras.png", width: 100%))
+
+#text(fill: cTheme.c3)[Shortest Paths on DAGs]
+- Negative weights OK (no cycles to loop infinitely)
+- Visit topological order, relax all outgoing edges for each vertex
+- Does not require additional data structures
+
+#text(fill: cTheme.c3)[Minimum Spanning Trees: ] spanning tree w/ min edge weight sum
+
+#text(fill: cTheme.c3)[Prim-Jarnik's Algorithm: ] similar to Dikjstra's algorithm, except update step doesn't consider dist. from source - just edge weights. $d(v) = $ smallest edge weight connected $v$ to the current cloud
+Add vertex $u$ to the cloud which has smallest $d(u)$
+
+#text(fill: cTheme.c3)[Kruskal's Algorithm: ] Start with single-vertex clusters. Store PQ of edge weights. Extract edges in increasing weight order, "accept" edge only if it connects distinct clusters. 
+#colbreak()
+
+= #text(fill: cTheme.c2)[Pseudocode]
+
+#customAlgo("DFS-Recursive", ("G, v",), [
+    *Input:* Graph $G$ and a vertex $v$ of $G$\
+    *Output:* Collection of vertices reachable from $v$ + their discovery & back edges\
+    Mark vertex $v$ as visited\ 
+    for all $e in G.text("outgoingEdges")(v)$ do #i\
+      if $e$ is not explored then #i\
+        $w <- G.text("opposite")(v, e)$\
+        if $w$ has not been visited then #i\
+          Record edge $e$ as discovery edge for vertex $w$\
+          DFS($G, w$)\
+        else #i\
+          Mark $e$ as a back edge for vertex $w$
+  ]
+)
+
+#customAlgo("BFS", ("G, u",), [
+    *Input:* Graph $G$ and a vertex $u$ of $G$\
+    *Output:* Collection of vertices reachable from $u$ + their discovery & cross edges\
+    $Q <-$ new empty queue\
+    $Q.text("enqueue")(u)$\
+    Mark vertex $u$ as visited\
+    while $Q.text("isEmpty")()$ do #i\
+      $v <- Q.text("dequeue")()$\
+      for all $e$ in $G.text("incidentEdges")(v)$ do #i\
+        if $e$ is not explored then #i\
+          $w <- G.text("opposite")(v, e)$\
+          if $w$ has not been visited then #i\
+            Record edge $e$ as discovery edge for vertex $w$\
+            $Q.text("enqueue")(w)$\
+            Mark vertex $w$ as visited\
+          else #i\
+            Mark $e$ as a cross edge
+  ]
+)
+
+#customAlgo("topologicalDFS", ("G", "v"), [
+    Mark vertex $v$ as visited\
+    for all $e$ in $G.text("outgoingEdges")(v)$ do #i\
+      $w <- G.text("opposite")(v, e)$\
+      if $w$ has not been visited then #i\
+        { $e$ is a discovery edge }\
+        $text("topologicalDFS")(G, w)$\
+      else #i\
+        { $e$ is a forward or cross edge }\
+    Label $v$ with topological number $n$\
+    $n <- n - 1$
+])
+
+ #customAlgo("DijkstraDistances", ("G", "s"), [
+    $P <-$ new heap-based priority queue\
+    for all $v$ in $G.text("vertices")()$ do #i\
+      if $v = s$ then #i\
+        $"setDistance"(v, 0)$\
+      else #i\
+        $"setDistance"(v, ∞)$\
+      $P.text("insert")("getDistance"(v), v)$\
+    while $P.text("isEmpty")()$ do #i\
+      $u <- P.text("removeMin")()$\
+      for all $e$ in $G.text("incidentEdges")(u)$ do #i\
+        { relax edge $e$ }\
+        $z <- G.text("opposite")(u, e)$\
+        $r <- "getDistance"(u) + "weight"(e)$\
+        if $r < "getDistance"(z)$ then #i\
+          $"setDistance"(z, r)$\
+          $P.text("replaceKey")("getLocator"(z), r)$
+])
 
 
 = #text(fill: cTheme.c1)[ADT Methods]
