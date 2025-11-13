@@ -36,26 +36,29 @@
   let small-params = params.map(p => text(font: "Cabin", size: 8pt)[#p])
   // let monoFont = "JetBrainsMono NF"
   // show math.equation: set text(font: monoFont)
-  algo(
-    title: [
-      #set text(font: "Cabin", size: 9pt)
-      #smallcaps("Algorithm " + title)
-    ],
-    parameters: small-params,
-    // comment-prefix: [#sym.triangle.stroked.r ],
-    comment-prefix: "// ",
-    // comment-styles: (fill: rgb(100%, 0%, 0%), font: monoFont, size: 7pt),
-    line-numbers: false,
-    indent-size: 10pt,
-    indent-guides: 0.5pt + luma(200),
-    row-gutter: 5pt,
-    column-gutter: 4em,
-    inset: 4pt,
-    // stroke: 0pt,
-    // main-text-styles: (font: monoFont, size: 8pt),
-    block-align: center,
-    body
-  )
+  align(center, block(
+    spacing: 0em,
+    algo(
+      title: [
+        #set text(font: "Cabin", size: 9pt)
+        #smallcaps("Algorithm " + title)
+      ],
+      parameters: small-params,
+      // comment-prefix: [#sym.triangle.stroked.r ],
+      comment-prefix: "// ",
+      // comment-styles: (fill: rgb(100%, 0%, 0%), font: monoFont, size: 7pt),
+      line-numbers: false,
+      indent-size: 10pt,
+      indent-guides: 0.5pt + luma(200),
+      row-gutter: 5pt,
+      column-gutter: 4em,
+      inset: 4pt,
+      // stroke: 0pt,
+      // main-text-styles: (font: monoFont, size: 8pt),
+      block-align: center,
+      body
+    )
+  ))
 }
 
 // COLOUR THEME !
@@ -328,7 +331,80 @@ $ <--> exists c_1, c_2 in RR, n_0 in ZZ^(>=0) text("s.t.") forall n >= n_0, c_1 
 Add vertex $u$ to the cloud which has smallest $d(u)$
 
 #text(fill: cTheme.c3)[Kruskal's Algorithm: ] Start with single-vertex clusters. Store PQ of edge weights. Extract edges in increasing weight order, "accept" edge only if it connects distinct clusters. 
+
+= #text(fill: cTheme.c4)[Strings, Patterns, Tries]
+
+#text(fill: cTheme.c3)[Tries: ] Edge = char, each node has a map/sorted list of edges for traversal. To check if string present, traverse until leaf hit (leaf not required for substring/prefix). $O(n)$ worst-case.
+
+#text(fill: cTheme.c3)[Suffix Tries: ] Append special char \$ to string end. Insert all suffixes of string into trie. $O(m)$ time to search for pattern of length $m$. $O(n^2)$ time to construct suffix trie for string of length $n$. Note: a substring is a prefix of a suffix. $O(n^2)$ worst space (no prefix sharing, all distinct chars), $O(n)$ best. Common uses:
+- Check for substring P - traverse - true if no fall-off - $O(|P|)$
+- Count substring occurrences - 0 if fall-off, else it is no. of leaf descendants of last node - $O(|P|)$
+- Longest repeated substring - find *deepest* internal node with >1 children
+
+#columns(2, gutter: 0em)[
+#align(center, image("images/Suffix_Tree.png", width: 100%))
 #colbreak()
+#text(fill: cTheme.c3)[Suffix Trees: ]\
+Compress paths\
+Replace edge labels by (offset, length) pairs\
+Keep T stored separately for ref\
+Store "final" offsets at leaves\
+$O(m^2)$ time to construct\
+$O(m)$ final space, $O(m^2)$ to build
+]
+
+
+#colbreak()
+
+
+= #text(fill: cTheme.c1)[ADT Methods]
+
+
+#grid( //  STACK
+  columns: (15%, auto, auto, auto),
+  grid.cell(rowspan: 2, text("Stack", weight: "bold", fill: cTheme.c1), align: left + horizon),
+  [`push(V)`], [`pop()`], [`top()` or `peek()`]
+)
+
+#grid( //  QUEUE
+  columns: (15%, auto, auto, auto),
+  grid.cell(rowspan: 2, text("Queue", weight: "bold", fill: cTheme.c1), align: left + horizon),
+  [`enqueue(V)`], [`dequeue()`], [`front()` or `peek()`]
+)
+
+#grid( //  PQ
+  columns: (15%, auto, auto, auto),
+  grid.cell(rowspan: 2, text("Priority Q", weight: "bold", fill: cTheme.c1), align: left + horizon),
+  [`insert(K, V)`], [`removeMin()`], [`min()`]
+)
+
+#grid( //  Entry
+  columns: (15%, auto, auto, auto),
+  grid.cell(rowspan: 2, text("Entry", weight: "bold", fill: cTheme.c1), align: left + horizon),
+  [`getKey()`], [`getValue()`], [`compareTo(Entry)`]
+)
+
+#grid( // Map 
+  columns: (15%, auto, auto, auto),
+  grid.cell(rowspan: 2, text("Map", weight: "bold", fill: cTheme.c1), align: left + horizon),
+  [`get(K)`], [`put(K, V)`], [`remove(K)`],
+  [`entrySet()`], [`keySet()`], [`values()`]
+)
+
+#grid( // Graphs
+  columns: (15%, auto, auto),
+  grid.cell(rowspan: 8, text("Graph", weight: "bold", fill: cTheme.c1), align: left + horizon),
+  [`numVertices()`], [`vertices()`],
+  [`numEdges()`], [`edges()`],
+  [`outDegree(V)`], [`inDegree(V)`],
+  [`outgoingEdges(V)`], [`incomingEdges(V)`],
+  [`insertVertex(x)`], [`insertEdge(V1, V2, x)`],
+  [`removeVertex(V)`], [`removeEdge(E)`], 
+  [`getEdge(V1, V2)`], [`endVertices(E)`], 
+  [`opposite(V, E)`],
+)
+
+
 
 = #text(fill: cTheme.c2)[Pseudocode]
 
@@ -398,55 +474,6 @@ Add vertex $u$ to the cloud which has smallest $d(u)$
           $"setDistance"(z, r)$\
           $P.text("replaceKey")("getLocator"(z), r)$
 ])
-
-
-= #text(fill: cTheme.c1)[ADT Methods]
-
-
-#grid( //  STACK
-  columns: (15%, auto, auto, auto),
-  grid.cell(rowspan: 2, text("Stack", weight: "bold", fill: cTheme.c1), align: left + horizon),
-  [`push(V)`], [`pop()`], [`top()` or `peek()`]
-)
-
-#grid( //  QUEUE
-  columns: (15%, auto, auto, auto),
-  grid.cell(rowspan: 2, text("Queue", weight: "bold", fill: cTheme.c1), align: left + horizon),
-  [`enqueue(V)`], [`dequeue()`], [`front()` or `peek()`]
-)
-
-#grid( //  PQ
-  columns: (15%, auto, auto, auto),
-  grid.cell(rowspan: 2, text("Priority Q", weight: "bold", fill: cTheme.c1), align: left + horizon),
-  [`insert(K, V)`], [`removeMin()`], [`min()`]
-)
-
-#grid( //  Entry
-  columns: (15%, auto, auto, auto),
-  grid.cell(rowspan: 2, text("Entry", weight: "bold", fill: cTheme.c1), align: left + horizon),
-  [`getKey()`], [`getValue()`], [`compareTo(Entry)`]
-)
-
-#grid( // Map 
-  columns: (15%, auto, auto, auto),
-  grid.cell(rowspan: 2, text("Map", weight: "bold", fill: cTheme.c1), align: left + horizon),
-  [`get(K)`], [`put(K, V)`], [`remove(K)`],
-  [`entrySet()`], [`keySet()`], [`values()`]
-)
-
-#grid( // Graphs
-  columns: (15%, auto, auto),
-  grid.cell(rowspan: 8, text("Graph", weight: "bold", fill: cTheme.c1), align: left + horizon),
-  [`numVertices()`], [`vertices()`],
-  [`numEdges()`], [`edges()`],
-  [`outDegree(V)`], [`inDegree(V)`],
-  [`outgoingEdges(V)`], [`incomingEdges(V)`],
-  [`insertVertex(x)`], [`insertEdge(V1, V2, x)`],
-  [`removeVertex(V)`], [`removeEdge(E)`], 
-  [`getEdge(V1, V2)`], [`endVertices(E)`], 
-  [`opposite(V, E)`],
-)
-
 
 // #customAlgo(text("BinarySearch", fill: cTheme.c2), ("A, l, r",), [
 //     *Input:* a sorted array, $A$\
