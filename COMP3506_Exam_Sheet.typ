@@ -18,7 +18,7 @@
 
 // #set raw(lang: "java", theme: "latte.tmTheme")
 
-#show raw: set text(font: "JetBrainsMono Nerd Font", size: 6.5pt)
+#show raw: set text(font: "JetBrainsMono Nerd Font", size: 6pt)
 #show heading: content => {
   set block(below: 0.5em, above: 0.5em)
   set align(center)
@@ -40,7 +40,7 @@
     spacing: 0em,
     algo(
       title: [
-        #set text(font: "Cabin", size: 9pt)
+        #set text(font: "Cabin", size: 8pt)
         #smallcaps("Algorithm " + title)
       ],
       parameters: small-params,
@@ -295,7 +295,7 @@ $ <--> exists c_1, c_2 in RR, n_0 in ZZ^(>=0) text("s.t.") forall n >= n_0, c_1 
 
 #pagebreak()
 
-#set page(paper: "a4", margin: (x: 10pt, y: 15pt), columns: 4, flipped: true)
+#set page(paper: "a4", margin: (x: 10pt, y: 8pt), columns: 4, flipped: true)
 
 #text(fill: cTheme.c3)[Properties of DFS/BFS traversal:]
 - Back edge (DFS): edge to an ancestor (visited) vertex
@@ -334,79 +334,128 @@ Add vertex $u$ to the cloud which has smallest $d(u)$
 
 = #text(fill: cTheme.c4)[Strings, Patterns, Tries]
 
-#text(fill: cTheme.c3)[Tries: ] Edge = char, each node has a map/sorted list of edges for traversal. To check if string present, traverse until leaf hit (leaf not required for substring/prefix). $O(n)$ worst-case.
+#text(fill: cTheme.c4)[Tries: ] Edge = char, each node has a map/sorted list of edges for traversal. To check if string present, traverse until leaf hit (leaf not required for substring/prefix). $O(n)$ worst-case.
 
-#text(fill: cTheme.c3)[Suffix Tries: ] Append special char \$ to string end. Insert all suffixes of string into trie. $O(m)$ time to search for pattern of length $m$. $O(n^2)$ time to construct suffix trie for string of length $n$. Note: a substring is a prefix of a suffix. $O(n^2)$ worst space (no prefix sharing, all distinct chars), $O(n)$ best. Common uses:
+#text(fill: cTheme.c4)[Suffix Tries: ] Append special char \$ to string end. Insert all suffixes of string into trie. $O(m)$ time to search for pattern of length $m$. $O(n^2)$ time to construct suffix trie for string of length $n$. Note: a substring is a prefix of a suffix. $O(n^2)$ worst space (no prefix sharing, all distinct chars), $O(n)$ best. Common uses:
 - Check for substring P - traverse - true if no fall-off - $O(|P|)$
 - Count substring occurrences - 0 if fall-off, else it is no. of leaf descendants of last node - $O(|P|)$
 - Longest repeated substring - find *deepest* internal node with >1 children
 
 #columns(2, gutter: 0em)[
-#align(center, image("images/Suffix_Tree.png", width: 100%))
-#colbreak()
-#text(fill: cTheme.c3)[Suffix Trees: ]\
-Compress paths\
-Replace edge labels by (offset, length) pairs\
-Keep T stored separately for ref\
-Store "final" offsets at leaves\
-$O(m^2)$ time to construct\
-$O(m)$ final space, $O(m^2)$ to build
+  #align(center, image("images/Suffix_Tree.png", width: 100%))
+  #colbreak()
+  #text(fill: cTheme.c4)[Suffix Trees: ]\
+  Compress paths\
+  Replace edge labels by (offset, length) pairs\
+  Keep T stored separately for ref\
+  Store "final" offsets at leaves\
+  $O(m^2)$ time to construct\
+  $O(m)$ final space, $O(m^2)$ to build
 ]
 
+- Check $P$ substring of $T$ - $O(|P|)$ worst
+- Count no. of $P$ in $T$ - $O(|P| + k)$ worst - traverse until fall off or found - count = $k$ leaf descendants of last node
+- *TIP:* go thru $T$, skip to building compressed paths, go thru suffixes of each distinct char in $T$, start from shortest suffix
+
+#columns(2, gutter: 0em)[
+  #align(center, image("images/Suffix_Array.png", width: 100%))
+  #colbreak()
+  #text(fill: cTheme.c4)[Suffix Arrays: ]
+  - Write all suffixes of $T$ w/ offsets
+  - Sort suffixes lexicographically (\$ is 1st)
+  - Store offsets in array
+]
+
+- Construction is $O(|T|^2 dot log(|T|))$ as we sort $|T|$ suffixes, each up to $|T|$ length
+- Check substring $P$ of $T$ - $O|P| dot log(|T|)$ - binary search and compare suffixes at each offset vs. $P$
+- Count no. of $P$ in $T$ - binary search for lower bound (entry *must* start w/ $P$) and upper bound - count = upperIndex - lowerIndex + 1 (*not* offsets)
+
+= #text(fill: cTheme.c5)[Huffman Encoding]
+
+#columns(2, gutter: 0em)[
+  #align(center, image("images/HuffmanCodeBook.png", width: 100%))
+  #colbreak()
+  Given a set $n$ of positive weights (e.g. char counts in $T$)\
+  Compute set of $n$ codeword lengths s.t. sum is minimal\
+  i.e. use to get smallest number of bits to represent $T$\
+]
+- $O(n + d log d)$ where $n = |X|$, $d$ = distinct char \#
+- Produce codebook from tree by traversing left = 0, right = 1
+- As each codeword can be variable length, no codeword is a prefix of another, e.g. 1101 may be 1-101 or 11-01
+1. Get weights of each distinct char in $T$
+2. Start with each tree = single node. Put into PQ -> (weight, tree)
+3. RemoveMin twice -> merge (w1, T1), (w2, T2)
+4. Put back into PQ -> (w1 + w2, new tree with T1 left, T2 right)
+5. Repeat until only 1 tree remains - return this tree
+
+#align(center, rect(image("images/happy.jpg", width: 20%), inset: 0pt, stroke: 2pt))
 
 #colbreak()
 
 
-= #text(fill: cTheme.c1)[ADT Methods]
+= #text(fill: cTheme.c6)[ADT Methods]
 
+// #grid( //  STACK
+//   columns: (15%, auto, auto, auto),
+//   grid.cell(rowspan: 2, text("Stack", weight: "bold", fill: cTheme.c6), align: left + horizon),
+//   [`push(V)`], [`pop()`], [`top()` or `peek()`]
+// )
 
-#grid( //  STACK
-  columns: (15%, auto, auto, auto),
-  grid.cell(rowspan: 2, text("Stack", weight: "bold", fill: cTheme.c1), align: left + horizon),
-  [`push(V)`], [`pop()`], [`top()` or `peek()`]
-)
+// #grid( //  QUEUE
+//   columns: (15%, auto, auto, auto),
+//   grid.cell(rowspan: 2, text("Queue", weight: "bold", fill: cTheme.c6), align: left + horizon),
+//   [`enqueue(V)`], [`dequeue()`], [`front()`]
+// )
 
-#grid( //  QUEUE
-  columns: (15%, auto, auto, auto),
-  grid.cell(rowspan: 2, text("Queue", weight: "bold", fill: cTheme.c1), align: left + horizon),
-  [`enqueue(V)`], [`dequeue()`], [`front()` or `peek()`]
-)
+// #grid( //  PQ
+//   columns: (15%, auto, auto, auto),
+//   grid.cell(rowspan: 2, text("PriorityQ", weight: "bold", fill: cTheme.c6), align: left + horizon),
+//   [`insert(K, V)`], [`removeMin()`], [`min()`]
+// )
 
-#grid( //  PQ
-  columns: (15%, auto, auto, auto),
-  grid.cell(rowspan: 2, text("Priority Q", weight: "bold", fill: cTheme.c1), align: left + horizon),
-  [`insert(K, V)`], [`removeMin()`], [`min()`]
-)
-
-#grid( //  Entry
-  columns: (15%, auto, auto, auto),
-  grid.cell(rowspan: 2, text("Entry", weight: "bold", fill: cTheme.c1), align: left + horizon),
-  [`getKey()`], [`getValue()`], [`compareTo(Entry)`]
-)
+// #grid( //  Entry
+//   columns: (15%, auto, auto, auto),
+//   grid.cell(rowspan: 2, text("Entry", weight: "bold", fill: cTheme.c6), align: left + horizon),
+//   [`getKey()`], [`getValue()`], [`compareTo(Entry)`]
+// )
 
 #grid( // Map 
   columns: (15%, auto, auto, auto),
-  grid.cell(rowspan: 2, text("Map", weight: "bold", fill: cTheme.c1), align: left + horizon),
+  grid.cell(rowspan: 2, text("Map", weight: "bold", fill: cTheme.c6), align: left + horizon),
   [`get(K)`], [`put(K, V)`], [`remove(K)`],
   [`entrySet()`], [`keySet()`], [`values()`]
 )
 
 #grid( // Graphs
   columns: (15%, auto, auto),
-  grid.cell(rowspan: 8, text("Graph", weight: "bold", fill: cTheme.c1), align: left + horizon),
+  grid.cell(rowspan: 8, text("Graph", weight: "bold", fill: cTheme.c6), align: left + horizon),
   [`numVertices()`], [`vertices()`],
   [`numEdges()`], [`edges()`],
   [`outDegree(V)`], [`inDegree(V)`],
   [`outgoingEdges(V)`], [`incomingEdges(V)`],
-  [`insertVertex(x)`], [`insertEdge(V1, V2, x)`],
+  [`insertVertex(x)`], [`insertEdge(V1,V2,x)`],
   [`removeVertex(V)`], [`removeEdge(E)`], 
   [`getEdge(V1, V2)`], [`endVertices(E)`], 
   [`opposite(V, E)`],
 )
 
+= #text(fill: cTheme.c1)[Pseudocode & Scuffed Helpers]
 
-
-= #text(fill: cTheme.c2)[Pseudocode]
+#customAlgo("Huffman", ("X",), [
+    *Input:* String $X$ of length $n$\
+    *Output:* Optimal encoding tree for $X$\
+    $P <-$ new empty Priority Queue\
+    for each character $c$ in alphabet of $X$ do #i\
+        $T <-$ single node binary tree storing $c$\
+        $P.text("insert")(f(c), T)$\
+    while $P.text("size")() > 1$ do #i\
+        $(f_1, T_1) = P.text("removeMin")()$\
+        $(f_2, T_2) = P.text("removeMin")()$\
+        $T <-$ new binary tree $T$ with left subtree $T_1$ and right subtree $T_2$\
+        $P.text("insert")(f_1 + f_2, T)$\
+    $(f, T) = P.text("removeMin")()$ #d\
+    return $T$\
+])
 
 #customAlgo("DFS-Recursive", ("G, v",), [
     *Input:* Graph $G$ and a vertex $v$ of $G$\
@@ -423,7 +472,30 @@ $O(m)$ final space, $O(m^2)$ to build
   ]
 )
 
-#customAlgo("BFS", ("G, u",), [
+#text("", size: 2pt)
+
+#text(fill: cTheme.c1, weight: "bold")[DFS Iterative (SCUFFED)]
+
+```
+1. Push START vertex to empty stack; init visited tracker + RESULT list.
+2. While stack not empty: pop A.
+3. If A unvisited, mark visited + add to RESULT.
+4. For each outgoing edge from A:
+5. If edge unvisited & adjacent unvisited, mark edge visited + push adjacent (reverse order).
+6. If edge unvisited & adjacent visited, it's a back edge (cycle possible).
+```
+#text(fill: cTheme.c1, weight: "bold")[BFS Iterative (SCUFFED)]
+
+```
+1. Queue START vertex to empty queue; init visited tracker + RESULT list.
+2. While queue not empty: dequeue A.
+3. If A unvisited, mark visited + add to RESULT.
+4. For each outgoing edge from A:
+5. If edge unvisited & adjacent unvisited, mark edge visited + queue adjacent (reverse order).
+6. If edge unvisited & adjacent visited, it's a cross edge (cycle possible).
+```
+
+#customAlgo("BFS-Recursive", ("G, u",), [
     *Input:* Graph $G$ and a vertex $u$ of $G$\
     *Output:* Collection of vertices reachable from $u$ + their discovery & cross edges\
     $Q <-$ new empty queue\
@@ -456,7 +528,7 @@ $O(m)$ final space, $O(m^2)$ to build
     $n <- n - 1$
 ])
 
- #customAlgo("DijkstraDistances", ("G", "s"), [
+#customAlgo("DijkstraDistances", ("G", "s"), [
     $P <-$ new heap-based priority queue\
     for all $v$ in $G.text("vertices")()$ do #i\
       if $v = s$ then #i\
@@ -467,13 +539,26 @@ $O(m)$ final space, $O(m^2)$ to build
     while $P.text("isEmpty")()$ do #i\
       $u <- P.text("removeMin")()$\
       for all $e$ in $G.text("incidentEdges")(u)$ do #i\
-        { relax edge $e$ }\
         $z <- G.text("opposite")(u, e)$\
         $r <- "getDistance"(u) + "weight"(e)$\
         if $r < "getDistance"(z)$ then #i\
           $"setDistance"(z, r)$\
           $P.text("replaceKey")("getLocator"(z), r)$
 ])
+
+#text("", size: 2pt)
+
+#text(fill: cTheme.c1, weight: "bold")[Dijkstras (SCUFFED)]
+```
+1. Init min-heap PQ + enqueue START vertex (dist=0).  
+2. Init locator map (vertex → PQ position).  
+3. Init visited tracker for processed nodes.  
+4. Init RESULT map for shortest path distances.  
+5. While PQ not empty: dequeue A.  
+6. If A unvisited mark visited + record in RESULT.
+7. For each edge (A→B,w): if B unvisited & dist[A]+w<dist[B], relax edge (update dist[B], update/enqueue B via locator); if B visited → ignore.  
+8. When PQ empty RESULT holds shortest path dists from START.
+```
 
 // #customAlgo(text("BinarySearch", fill: cTheme.c2), ("A, l, r",), [
 //     *Input:* a sorted array, $A$\
